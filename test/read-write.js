@@ -132,6 +132,35 @@ test('check if a blob exists', function (t) {
   })
 })
 
+test('check if a blob exists', function (t) {
+  common.setup(test, function (err, store) {
+    t.notOk(err, 'no setup err')
+    var key = 'deep/subdir/long-filename-test.js'
+    store.exists(key, function (err, exists) {
+      t.error(err)
+      t.notOk(exists, 'does not exist')
+
+      var ws = store.createWriteStream(key, function (err, obj) {
+        t.notOk(err, 'no blob write err')
+        t.ok(obj.key, 'blob has key')
+        t.equal(obj.key, key, 'key matches')
+
+        // on this .exists call use the metadata from the writeStream
+        store.exists(key, function (err, exists) {
+          t.error(err)
+          t.ok(exists, 'exists')
+          common.teardown(test, store, obj, function (err) {
+            t.error(err)
+            t.end()
+          })
+        })
+      })
+
+      from([Buffer.from('foo'), Buffer.from('bar')]).pipe(ws)
+    })
+  })
+})
+
 test('check readme example works', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
