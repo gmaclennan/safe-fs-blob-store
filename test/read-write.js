@@ -50,7 +50,7 @@ test('reading a blob as a stream', function (t) {
 test('subdirs don\'t conflict with prefixes', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
-    var filenames = ['foobar.txt', 'fo']
+    var filenames = ['foobar.txt', 'fo', '.foo', 'f.txt', 'f']
     var pending = filenames.length
     filenames.forEach(function (name) {
       var ws = store.createWriteStream({name: name}, onWrite)
